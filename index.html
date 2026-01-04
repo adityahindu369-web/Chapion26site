@@ -196,7 +196,6 @@
             border-left: 4px solid #25D366;
             position: relative;
             overflow: hidden;
-            text-decoration: none;
             display: block;
         }
 
@@ -234,6 +233,75 @@
             display: none;
         }
 
+        /* Iframe Modal Styles */
+        .iframe-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            z-index: 2000;
+        }
+
+        .iframe-modal-overlay.active {
+            display: block;
+        }
+
+        .iframe-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .iframe-content {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #000;
+        }
+
+        .close-iframe-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ff4757;
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 2001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .close-iframe-btn:hover {
+            background: #ff3742;
+            transform: scale(1.1);
+        }
+
+        .chapter-title {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 10px;
+            z-index: 2001;
+        }
+
         @media (max-width: 480px) {
             .modal-content {
                 padding: 35px 25px;
@@ -251,6 +319,21 @@
             .whatsapp-icon svg {
                 width: 45px;
                 height: 45px;
+            }
+            
+            .close-iframe-btn {
+                top: 10px;
+                right: 10px;
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+            
+            .chapter-title {
+                top: 10px;
+                left: 10px;
+                font-size: 14px;
+                padding: 8px 15px;
             }
         }
     </style>
@@ -275,6 +358,15 @@
                 JOIN NOW
             </a>
             <div class="already-joined" onclick="closeModal()">I have already joined</div>
+        </div>
+    </div>
+
+    <!-- Iframe Modal -->
+    <div class="iframe-modal-overlay" id="iframeModal">
+        <button class="close-iframe-btn" onclick="closeIframeModal()">×</button>
+        <div class="chapter-title" id="chapterTitle"></div>
+        <div class="iframe-container">
+            <iframe class="iframe-content" id="contentFrame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"></iframe>
         </div>
     </div>
 
@@ -303,6 +395,31 @@
             document.getElementById('modalOverlay').classList.add('hidden');
         }
 
+        function openIframeModal(chapterName, chapterLink) {
+            // Set chapter title
+            document.getElementById('chapterTitle').textContent = chapterName;
+            
+            // Set iframe source
+            document.getElementById('contentFrame').src = chapterLink;
+            
+            // Show iframe modal
+            document.getElementById('iframeModal').classList.add('active');
+            
+            // Close WhatsApp modal if it's open
+            closeModal();
+        }
+
+        function closeIframeModal() {
+            // Hide iframe modal
+            document.getElementById('iframeModal').classList.remove('active');
+            
+            // Clear iframe source
+            document.getElementById('contentFrame').src = '';
+            
+            // Clear chapter title
+            document.getElementById('chapterTitle').textContent = '';
+        }
+
         // Show modal on page load
         window.addEventListener('load', function() {
             document.getElementById('modalOverlay').classList.remove('hidden');
@@ -311,27 +428,27 @@
             setTimeout(loadChapters, 100);
         });
 
-        // Chapters data - you can add more chapters here
+        // Chapters data - add your links here
         const chaptersData = [
             {
                 name: "Strategy & Guidance",
-                link: "https://av-file-to-link-pro-3a5qd.sevalla.app/2092?hash=AgADXw"
+                link: "https://av-file-to-link-pro-3a5qd.sevalla.app/2092?hash=AgADXw"  // Add your link here
             },
             {
                 name: "Classification of No 01",
-                link: "https://av-file-to-link-pro-3a5qd.sevalla.app/2094?hash=AgADFA"
+                link: "https://av-file-to-link-pro-3a5qd.sevalla.app/2094?hash=AgADFA"  // Add your link here
             },
             {
                 name: "Classification of No 02",
-                link: "https://av-file-to-link-pro-3a5qd.sevalla.app/2096?hash=AgADFg"
+                link: "https://av-file-to-link-pro-3a5qd.sevalla.app/2096?hash=AgADFg"  // Add your link here
             },
             {
                 name: "Unit digit 01",
-                link: "https://av-file-to-link-pro-3a5qd.sevalla.app/2100?hash=AgADFw"
+                link: "https://av-file-to-link-pro-3a5qd.sevalla.app/2100?hash=AgADFw"  // Add your link here
             },
             {
                 name: "Unit digit 02",
-                link: "https://av-file-to-link-pro-3a5qd.sevalla.app/2098?hash=AgADIw"
+                link: "https://av-file-to-link-pro-3a5qd.sevalla.app/2098?hash=AgADIw"  // Add your link here
             }
         ];
 
@@ -343,12 +460,16 @@
             
             // Add chapters
             chaptersData.forEach((chapter, index) => {
-                const chapterCard = document.createElement('a');
+                const chapterCard = document.createElement('div');
                 chapterCard.className = 'chapter-card';
-                chapterCard.href = chapter.link;
-                chapterCard.target = '_blank';
                 chapterCard.textContent = chapter.name;
                 chapterCard.dataset.name = chapter.name.toLowerCase();
+                
+                // Add click event to open iframe
+                chapterCard.onclick = function() {
+                    openIframeModal(chapter.name, chapter.link);
+                };
+                
                 chaptersList.appendChild(chapterCard);
             });
         }
@@ -383,4 +504,4 @@
         loadChapters();
     </script>
 </body>
-</html>
+    </html>
