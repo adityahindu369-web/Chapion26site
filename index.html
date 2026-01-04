@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CHAMPIONS 26.0 Maths Special LIVE - Subjects</title>
+    <title>CHAMPIONS 26.0 Maths Special LIVE - Chapters</title>
     <style>
         * {
             margin: 0;
@@ -157,7 +157,32 @@
             background: #000;
         }
 
-        .subject-card {
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            background: #1E1E26;
+            border: 2px solid #626EEF;
+            border-radius: 15px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: #25D366;
+            box-shadow: 0 0 0 2px rgba(37, 211, 102, 0.2);
+        }
+
+        .search-input::placeholder {
+            color: #8a8a8a;
+        }
+
+        .chapter-card {
             background: #1E1E26;
             border-radius: 15px;
             padding: 20px 25px;
@@ -168,37 +193,45 @@
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 4px 12px rgba(98, 110, 239, 0.2);
-            border-bottom: 2px solid #626EEF;
+            border-left: 4px solid #25D366;
             position: relative;
             overflow: hidden;
             text-decoration: none;
             display: block;
         }
 
-        .subject-card::before {
+        .chapter-card:hover {
+            background: #2a2a35;
+            transform: translateX(5px);
+            box-shadow: 0 6px 20px rgba(98, 110, 239, 0.4);
+        }
+
+        .chapter-card:active {
+            transform: scale(0.98);
+        }
+
+        .chapter-card::before {
             content: '';
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
             height: 2px;
-            background: linear-gradient(90deg, #626EEF 0%, #D4AF37 100%);
+            background: linear-gradient(90deg, #25D366 0%, #626EEF 100%);
             transform: scaleX(0);
             transition: transform 0.3s ease;
         }
 
-        .subject-card:hover::before {
+        .chapter-card:hover::before {
             transform: scaleX(1);
         }
 
-        .subject-card:active {
-            transform: scale(0.98);
-        }
-
-        .subject-card:hover {
-            box-shadow: 0 6px 20px rgba(98, 110, 239, 0.4);
-            transform: translateY(-3px);
-            border-bottom-color: #D4AF37;
+        .no-results {
+            color: #8a8a8a;
+            text-align: center;
+            padding: 20px;
+            font-size: 16px;
+            display: none;
         }
 
         @media (max-width: 480px) {
@@ -250,20 +283,19 @@
         <div class="header-title"></div>
     </div>
 
-    <div class="content">
-        <!-- First Subject with Link -->
-        <a href="https://filetolink82ii-1-a84d33b9aa38.herokuapp.com/stream/993086?hash=635eca" 
-           target="_blank" 
-           class="subject-card">
-            STRATEGY & GUIDANCE
-        </a>
-        
-        <!-- Second Subject with Link -->
-        <a href="https://filetolink82ii-1-a84d33b9aa38.herokuapp.com/stream/993088?hash=6e0b28" 
-           target="_blank" 
-           class="subject-card">
-            Classification of No. 01
-        </a>
+    <div class="content" id="mainContent">
+        <!-- Search Bar -->
+        <div class="search-container">
+            <input type="text" class="search-input" id="searchInput" placeholder="Search chapters...">
+        </div>
+
+        <!-- No Results Message -->
+        <div class="no-results" id="noResults">No chapters found</div>
+
+        <!-- Chapters List -->
+        <div id="chaptersList">
+            <!-- All chapters will be dynamically added here -->
+        </div>
     </div>
 
     <script>
@@ -274,7 +306,81 @@
         // Show modal on page load
         window.addEventListener('load', function() {
             document.getElementById('modalOverlay').classList.remove('hidden');
+            
+            // Load chapters after modal
+            setTimeout(loadChapters, 100);
         });
+
+        // Chapters data - you can add more chapters here
+        const chaptersData = [
+            {
+                name: "Strategy & Guidance",
+                link: "https://av-file-to-link-pro-3a5qd.sevalla.app/2092?hash=AgADXw"
+            },
+            {
+                name: "Classification of No 01",
+                link: "https://av-file-to-link-pro-3a5qd.sevalla.app/2094?hash=AgADFA"
+            },
+            {
+                name: "Classification of No 02",
+                link: "https://av-file-to-link-pro-3a5qd.sevalla.app/2096?hash=AgADFg"
+            },
+            {
+                name: "Unit digit 01",
+                link: "https://av-file-to-link-pro-3a5qd.sevalla.app/2100?hash=AgADFw"
+            },
+            {
+                name: "Unit digit 02",
+                link: "https://av-file-to-link-pro-3a5qd.sevalla.app/2098?hash=AgADIw"
+            }
+        ];
+
+        function loadChapters() {
+            const chaptersList = document.getElementById('chaptersList');
+            
+            // Clear existing content
+            chaptersList.innerHTML = '';
+            
+            // Add chapters
+            chaptersData.forEach((chapter, index) => {
+                const chapterCard = document.createElement('a');
+                chapterCard.className = 'chapter-card';
+                chapterCard.href = chapter.link;
+                chapterCard.target = '_blank';
+                chapterCard.textContent = chapter.name;
+                chapterCard.dataset.name = chapter.name.toLowerCase();
+                chaptersList.appendChild(chapterCard);
+            });
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const chapterCards = document.querySelectorAll('.chapter-card');
+            const noResults = document.getElementById('noResults');
+            
+            let visibleCount = 0;
+            
+            chapterCards.forEach(card => {
+                const chapterName = card.dataset.name;
+                if (chapterName.includes(searchTerm)) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Show/hide no results message
+            if (visibleCount === 0 && searchTerm !== '') {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+        });
+
+        // Initialize
+        loadChapters();
     </script>
 </body>
 </html>
